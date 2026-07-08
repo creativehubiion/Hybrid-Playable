@@ -328,13 +328,21 @@
       /* --dark-red */
     }
 
-    /* ── EC logo — anchored to the bottom, fills the space below the poll ── */
+    /* ── Poll group is vertically centred in the space above the logo,
+          so the gaps below the video and above the logo are balanced ── */
+    .poll-main {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* ── EC logo — anchored to the bottom ── */
     .ec-logo {
-      margin-top: auto;
       display: flex;
       justify-content: center;
       align-items: flex-end;
-      padding-top: clamp(10px, 3vw, 26px);
+      padding-top: clamp(8px, 2vw, 18px);
       padding-bottom: clamp(4px, 1.2vw, 12px);
       flex-shrink: 0;
     }
@@ -362,14 +370,16 @@
     <!-- POLL — shown immediately -->
     <div class="poll-area">
       <div class="poll-content">
-        <div class="poll-header">
-          <h2></h2>
-          <p></p>
+        <div class="poll-main">
+          <div class="poll-header">
+            <h2></h2>
+            <p></p>
+          </div>
+
+          <div class="poll-options" id="pollOptions"></div>
+
+          <button class="submit-btn" id="submitBtn" onclick="submitVote()"></button>
         </div>
-
-        <div class="poll-options" id="pollOptions"></div>
-
-        <button class="submit-btn" id="submitBtn" onclick="submitVote()"></button>
         <div class="ec-logo"><img src="logo.svg" alt="Electoral Commission New Zealand — Te Kaitiaki Take Kōwhiri"></div>
       </div>
     </div>
