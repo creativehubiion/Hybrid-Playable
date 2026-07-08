@@ -50,7 +50,7 @@
       width: 100%;
       height: 100%;
       font-family: 'Montserrat', system-ui, sans-serif;
-      background: var(--bg);
+      background: #000;
       color: var(--text);
       overflow: hidden;
       -webkit-tap-highlight-color: transparent;
@@ -60,11 +60,11 @@
     }
 
     .container {
-      /* 640 × 960 ad frame (2:3) — scales down proportionally on smaller screens */
+      /* 2:3 ad frame — fills the viewport by whichever dimension is limiting, keeping ratio.
+         Black letterbox (body bg) fills the rest. */
       aspect-ratio: 2 / 3;
-      width: min(640px, 100vw, calc(100dvh * 2 / 3));
+      width: min(100vw, calc(100dvh * 2 / 3));
       height: auto;
-      max-width: 100vw;
       max-height: 100dvh;
       display: flex;
       flex-direction: column;
