@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hybrid Playable — Mock Gallery</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: #0b1020;
+      color: #e8edf5;
+      min-height: 100vh;
+      padding: clamp(24px, 6vw, 72px) clamp(16px, 5vw, 64px);
+    }
+
+    header { max-width: 1100px; margin: 0 auto clamp(24px, 5vw, 48px); }
+
+    h1 {
+      font-size: clamp(26px, 5vw, 46px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(120deg, #7aa2ff, #e8edf5);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      margin-top: 10px;
+      color: #8ba0c4;
+      font-size: clamp(14px, 2vw, 18px);
+      max-width: 640px;
+    }
+
+    .format {
+      max-width: 1100px;
+      margin: 0 auto clamp(28px, 5vw, 52px);
+    }
+
+    .format h2 {
+      font-size: clamp(12px, 2vw, 15px);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #6f86ad;
+      padding-bottom: 14px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid rgba(122, 162, 255, 0.15);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: clamp(14px, 2vw, 22px);
+    }
+
+    .card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: #131b30;
+      border: 1px solid rgba(122, 162, 255, 0.12);
+      border-radius: 16px;
+      padding: 22px;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(122, 162, 255, 0.4);
+      background: #172038;
+    }
+
+    .swatch {
+      height: 96px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      padding: 10px;
+    }
+
+    .swatch span {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(3px);
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .ec  { background: linear-gradient(160deg, #ff7300 0%, #ffce00 55%, #ffe900 100%); color:#231f20; }
+    .dem { background: linear-gradient(160deg, #1a3a6b 0%, #3b82f6 100%); color:#fff; }
+
+    .card h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+    .card .meta { font-size: 13px; color: #8ba0c4; }
+    .card .variants { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .card .variants a {
+      font-size: 12px; font-weight: 600; text-decoration: none;
+      color: #a9c0ea; background: rgba(122,162,255,0.1);
+      padding: 4px 10px; border-radius: 999px;
+    }
+    .card .variants a:hover { background: rgba(122,162,255,0.22); color: #fff; }
+
+    footer { max-width: 1100px; margin: clamp(20px,4vw,40px) auto 0; color: #56688a; font-size: 13px; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Hybrid Playable</h1>
+    <p>Mock hybrid ad units — a video on top with an interactive panel below.
+       Each card opens a self-contained playable.</p>
+  </header>
+
+  <section class="format">
+    <h2>Hybrid Poll · video + poll</h2>
+    <div class="grid">
+
+      <div class="card">
+        <a href="hybrid-poll/electoral-commission-nz/index.html" style="text-decoration:none;color:inherit;display:block;">
+          <div class="swatch ec"><span>Orange / Yellow</span></div>
+          <h3>Electoral Commission NZ</h3>
+          <div class="meta">Enrol-to-vote · Montserrat · direct (no gate)</div>
+        </a>
+        <div class="variants">
+          <a href="hybrid-poll/electoral-commission-nz/index.html">Open ▸</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="swatch dem"><span>Navy / Blue</span></div>
+        <h3>Democrat / Harris</h3>
+        <div class="meta">Original reference build · DM Sans</div>
+        <div class="variants">
+          <a href="hybrid-poll/democrat-harris/index.html">Playable ▸</a>
+          <a href="hybrid-poll/democrat-harris/simple.html">Direct ▸</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    Add a new client by copying a folder in <code>hybrid-poll/_template/</code>. See README.md.
+  </footer>
+</body>
+
+</html>
