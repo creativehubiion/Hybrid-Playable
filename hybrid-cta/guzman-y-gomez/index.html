@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Guzman y Gomez Free Burrito</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap">
+  <style>
+    /* ── GYG brand faces, pulled from guzmanygomez.com theme CSS ── */
+    @font-face { font-family: 'Sinibold'; src: url('fonts/sini-bold-webfont-webfont.woff2') format('woff2'); font-style: normal; font-display: block; }
+    @font-face { font-family: 'Sinibold'; src: url('fonts/sini-bolditalic-webfont.woff2') format('woff2'); font-style: italic; font-display: block; }
+    @font-face { font-family: 'Guzman'; src: url('fonts/guzman_bold_caps-webfont.woff2') format('woff2'); font-display: block; }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    /* ══════════════════════════════════════════════════════════════
+       EDIT ME ▸ THEME  — GYG brand tokens (guzmanygomez.com)
+       Layout: video 37% on top · poster-yellow CTA panel 63% below:
+       headline → GOMEX voucher (tap to claim) → download CTA → badges + logo.
+       ══════════════════════════════════════════════════════════════ */
+    :root {
+      --yellow: #FFD204;       /* GYG gold — primary */
+      --cream: #FFECA9;        /* sunburst rays in the logo */
+      --ink: #171717;          /* site black */
+      --ink-soft: #231F20;     /* logo black */
+      --paper: #FFF9E5;        /* voucher stock */
+      --chilli: #D70015;       /* site red — "claimed" stamp */
+      --letterbox: #000;
+
+      --f-display: 'Sinibold', 'Arial Narrow', Impact, sans-serif;
+      --f-brand: 'Guzman', 'Sinibold', Impact, sans-serif;
+      --f-body: 'Montserrat', system-ui, sans-serif;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--letterbox);
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      display: flex; justify-content: center; align-items: center;
+      font-family: var(--f-body);
+      color: var(--ink);
+    }
+
+    /* 2:3 ad frame — every size below is in cqw (1cqw = 1% of frame width) */
+    .container {
+      aspect-ratio: 2 / 3;
+      width: min(100vw, calc(100dvh * 2 / 3));
+      max-height: 100dvh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      container-type: inline-size;
+      position: relative;
+    }
+
+    /* ── VIDEO (37%) ── */
+    .video-area { height: 37%; position: relative; background: var(--ink); flex-shrink: 0; overflow: hidden; }
+    .video-area video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .mute-btn {
+      position: absolute; top: 2.2cqw; right: 2.2cqw;
+      width: 7cqw; height: 7cqw; border-radius: 50%; border: none;
+      background: rgba(0, 0, 0, .5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3;
+    }
+    .mute-btn svg { width: 3.6cqw; height: 3.6cqw; fill: #fff; }
+    .mute-btn:focus-visible { outline: .5cqw solid var(--yellow); outline-offset: .4cqw; }
+
+    /* ── CTA PANEL (63%) ── */
+    .cta-area {
+      height: 63%; position: relative; overflow: hidden;
+      background: var(--yellow);
+      padding: 3.2cqw 6cqw 2.6cqw;
+      display: flex; flex-direction: column;
+    }
+
+    /* Logo sunburst, borrowed as the panel's atmosphere */
+    .rays {
+      position: absolute; left: 50%; top: 30%;
+      width: 190cqw; aspect-ratio: 1; translate: -50% -50%;
+      background: repeating-conic-gradient(from 0deg, var(--cream) 0deg 3.2deg, transparent 3.2deg 15deg);
+      -webkit-mask: radial-gradient(circle, #000 0 8%, transparent 52%);
+              mask: radial-gradient(circle, #000 0 8%, transparent 52%);
+      opacity: .7;
+      animation: spin 60s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes spin { to { rotate: 360deg; } }
+
+    .cta-inner { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; gap: 2.4cqw; }
+
+    /* Headline — poster lockup */
+    .headline { text-align: center; }
+    .headline h1 {
+      font-family: var(--f-display);
+      font-weight: normal;
+      font-size: 16cqw; line-height: .86;
+      letter-spacing: .1cqw;
+      text-transform: uppercase;
+      animation: stamp .55s cubic-bezier(.2, 1.6, .4, 1) both .15s;
+    }
+    .headline p {
+      font-family: var(--f-display);
+      font-size: 5.8cqw; line-height: .98;
+      text-transform: uppercase;
+      margin-top: .8cqw;
+      animation: rise .5s ease-out both .45s;
+    }
+    @keyframes stamp { from { transform: scale(1.35); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes rise { from { transform: translateY(3cqw); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    /* ── GOMEX voucher ── */
+    .voucher-wrap { display: flex; justify-content: center; animation: rise .55s ease-out both .7s; }
+    .voucher {
+      --notch: 2.6cqw;
+      position: relative;
+      width: 100%;
+      display: grid; grid-template-columns: 1fr auto;
+      background: var(--paper);
+      border: none; cursor: pointer; text-align: left; font: inherit; color: inherit;
+      border-radius: 1.6cqw;
+      rotate: -2deg;
+      box-shadow: 0 1.2cqw 0 var(--ink);
+      /* punched notches on both sides of the perforation */
+      -webkit-mask: radial-gradient(circle at calc(100% - 23cqw) 0, transparent var(--notch), #000 calc(var(--notch) + .5px)) top / 100% 51% no-repeat,
+                    radial-gradient(circle at calc(100% - 23cqw) 100%, transparent var(--notch), #000 calc(var(--notch) + .5px)) bottom / 100% 51% no-repeat;
+              mask: radial-gradient(circle at calc(100% - 23cqw) 0, transparent var(--notch), #000 calc(var(--notch) + .5px)) top / 100% 51% no-repeat,
+                    radial-gradient(circle at calc(100% - 23cqw) 100%, transparent var(--notch), #000 calc(var(--notch) + .5px)) bottom / 100% 51% no-repeat;
+      transition: transform .2s ease;
+    }
+    .voucher:hover { transform: translateY(-.4cqw); }
+    .voucher:focus-visible { outline: .6cqw solid var(--ink); outline-offset: .6cqw; }
+
+    .v-main { padding: 2.4cqw 3cqw 2.4cqw 4cqw; display: flex; flex-direction: column; gap: .8cqw; min-width: 0; }
+    .v-eyebrow {
+      font-family: var(--f-brand); font-size: 3.6cqw; letter-spacing: .3cqw;
+      display: flex; align-items: center; gap: 1.4cqw;
+    }
+    .v-eyebrow span {
+      font-family: var(--f-body); font-weight: 800; font-size: 2.1cqw; letter-spacing: .25cqw;
+      background: var(--ink); color: var(--yellow); padding: .5cqw 1.3cqw; border-radius: 10cqw;
+    }
+    .v-item { font-family: var(--f-display); font-size: 7.6cqw; line-height: .95; text-transform: uppercase; }
+    .v-value { font-weight: 700; font-size: 2.7cqw; letter-spacing: .05cqw; }
+    .v-value b { font-weight: 800; font-variant-numeric: tabular-nums; }
+
+    .v-stub {
+      width: 23cqw;
+      border-left: .45cqw dashed color-mix(in srgb, var(--ink) 45%, transparent);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1cqw;
+      padding: 2cqw 2cqw;
+    }
+    .v-free { font-family: var(--f-brand); font-size: 7cqw; line-height: 1; }
+    .barcode { width: 100%; height: 6cqw; display: block; }
+    .v-tap {
+      font-weight: 800; font-size: 2cqw; letter-spacing: .2cqw; text-transform: uppercase; white-space: nowrap;
+      animation: blink 1.6s ease-in-out infinite;
+    }
+    @keyframes blink { 50% { opacity: .35; } }
+
+    /* Claimed stamp */
+    .stamp {
+      position: absolute; left: 30%; top: 50%;
+      translate: -50% -50%; rotate: -12deg; scale: 2.2;
+      font-family: var(--f-display); font-size: 9cqw; letter-spacing: .3cqw; line-height: 1;
+      color: var(--chilli);
+      border: .8cqw solid var(--chilli); border-radius: 1.6cqw;
+      padding: 1cqw 2.4cqw .6cqw;
+      background: color-mix(in srgb, var(--paper) 70%, transparent);
+      opacity: 0; pointer-events: none;
+    }
+    .voucher.claimed .stamp { animation: slam .35s cubic-bezier(.3, 1.5, .5, 1) forwards; }
+    .voucher.claimed .v-tap { animation: none; opacity: 0; }
+    .voucher.claimed { cursor: default; }
+    @keyframes slam { to { opacity: .94; scale: 1; } }
+
+    /* ── Download button ── */
+    .cta-btn {
+      display: flex; align-items: center; justify-content: center; gap: 2.4cqw;
+      width: 100%; padding: 2.65cqw 4cqw;
+      border: none; border-radius: 2cqw; cursor: pointer;
+      background: var(--ink); color: var(--yellow);
+      font-family: var(--f-display); font-size: 7.4cqw; letter-spacing: .25cqw; line-height: 1; white-space: nowrap;
+      margin-top: 2.2cqw; /* ≈14px at 640w — extra air below the voucher */
+      box-shadow: 0 1cqw 0 color-mix(in srgb, var(--ink) 35%, var(--yellow));
+      transition: transform .15s ease, box-shadow .15s ease;
+      animation: rise .5s ease-out both .95s;
+    }
+    /* Sinibold's line box carries extra room above the caps — lift the label to optical centre */
+    #ctaLabel { position: relative; top: -.86cqw; }
+    .cta-btn svg { width: 5.4cqw; height: 5.4cqw; flex-shrink: 0; transition: translate .2s; }
+    .cta-btn:hover svg { translate: .8cqw 0; }
+    .cta-btn:active { transform: translateY(.8cqw); box-shadow: 0 .2cqw 0 color-mix(in srgb, var(--ink) 35%, var(--yellow)); }
+    .cta-btn:focus-visible { outline: .6cqw solid var(--ink); outline-offset: .6cqw; }
+    .cta-btn.ready { animation: nudge 1.4s ease-in-out infinite; }
+    @keyframes nudge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+
+    /* ── Footer: store badges + T&Cs | logo ── */
+    .foot { margin-top: auto; display: flex; align-items: flex-end; gap: 3cqw; }
+    .foot-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1.1cqw; }
+    .badges { display: flex; gap: 1.6cqw; }
+    .badge {
+      display: flex; align-items: center; gap: 1.2cqw;
+      background: var(--ink); color: #fff; text-decoration: none;
+      border-radius: 1.4cqw; padding: 1cqw 2cqw 1cqw 1.6cqw;
+      border: .25cqw solid color-mix(in srgb, #fff 25%, var(--ink));
+    }
+    .badge svg { width: 4.2cqw; height: 4.2cqw; flex-shrink: 0; }
+    .badge small { display: block; font-size: 1.6cqw; font-weight: 600; line-height: 1.1; }
+    .badge strong { display: block; font-size: 2.9cqw; font-weight: 700; line-height: 1.05; letter-spacing: -.05cqw; white-space: nowrap; }
+    .badge:focus-visible { outline: .5cqw solid var(--ink); outline-offset: .4cqw; }
+    .terms { font-size: 1.75cqw; font-weight: 600; line-height: 1.35; color: color-mix(in srgb, var(--ink) 75%, var(--yellow)); }
+    .handle { display: flex; align-items: center; gap: .8cqw; font-weight: 700; font-size: 2.2cqw; }
+    .handle svg { width: 2.8cqw; height: 2.8cqw; }
+
+    .logo { width: 19cqw; height: 19cqw; flex-shrink: 0; margin-bottom: -.4cqw; filter: drop-shadow(0 .6cqw 0 rgba(23, 23, 23, .18)); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+      .rays { animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- VIDEO — autoplays muted, loops -->
+    <div class="video-area">
+      <video id="video" autoplay muted loop playsinline preload="auto"></video>
+      <button class="mute-btn" id="muteBtn" aria-label="Unmute video">
+        <svg id="muteIcon" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+        <svg id="unmuteIcon" viewBox="0 0 24 24" hidden><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+      </button>
+    </div>
+
+    <!-- CTA PANEL -->
+    <div class="cta-area">
+      <div class="rays"></div>
+      <div class="cta-inner">
+
+        <div class="headline">
+          <h1 id="headline"></h1>
+          <p id="subline"></p>
+        </div>
+
+        <div class="voucher-wrap">
+          <button class="voucher" id="voucher" aria-label="Claim your free burrito voucher">
+            <div class="v-main">
+              <div class="v-eyebrow"><b id="vProgram"></b><span id="vTag"></span></div>
+              <div class="v-item" id="vItem"></div>
+              <div class="v-value" id="vValue"></div>
+            </div>
+            <div class="v-stub">
+              <div class="v-free" id="vFree"></div>
+              <svg class="barcode" id="barcode" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"></svg>
+              <div class="v-tap" id="vTap"></div>
+            </div>
+            <div class="stamp" id="stamp"></div>
+          </button>
+        </div>
+
+        <button class="cta-btn" id="ctaBtn">
+          <span id="ctaLabel"></span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="square"/></svg>
+        </button>
+
+        <div class="foot">
+          <div class="foot-left">
+            <div class="badges">
+              <a class="badge" id="appStore" href="#">
+                <svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16.37 12.6c-.02-2.3 1.88-3.4 1.96-3.46-1.07-1.56-2.73-1.77-3.32-1.8-1.41-.14-2.76.83-3.47.83-.72 0-1.82-.81-3-.79-1.54.02-2.96.9-3.76 2.27-1.6 2.78-.41 6.9 1.15 9.16.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.38 0 1.77.74 2.98.72 1.23-.02 2.01-1.12 2.77-2.23.87-1.28 1.23-2.52 1.25-2.58-.03-.01-2.38-.92-2.4-3.65zM14.1 5.86c.63-.77 1.06-1.83.94-2.89-.91.04-2.01.61-2.66 1.37-.58.67-1.1 1.76-.96 2.8 1.01.08 2.05-.52 2.68-1.28z"/></svg>
+                <span><small>Download on the</small><strong>App Store</strong></span>
+              </a>
+              <a class="badge" id="playStore" href="#">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 2.3 13.9 12 3.6 21.7c-.3-.2-.5-.6-.5-1V3.3c0-.4.2-.8.5-1z" fill="#00d7fe"/><path d="m17.3 8.7-3.4 3.3-10.3-9.7c.3-.2.8-.3 1.2-.1z" fill="#00f076"/><path d="m17.3 15.3-12.5 6.5c-.4.2-.9.1-1.2-.1L13.9 12z" fill="#f63448"/><path d="M20.6 10.4c.9.5.9 2.7 0 3.2l-3.3 1.7-3.4-3.3 3.4-3.3z" fill="#ffd500"/></svg>
+                <span><small>GET IT ON</small><strong>Google Play</strong></span>
+              </a>
+            </div>
+            <div class="handle">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.3" cy="6.7" r="1.3" fill="currentColor"/></svg>
+              <span id="handle"></span>
+            </div>
+            <p class="terms" id="terms"></p>
+          </div>
+          <img class="logo" src="logo.png" alt="Guzman y Gomez Mexican Kitchen">
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ══════════════════════════════════════════════════════════════
+       EDIT ME ▸ COPY & DATA
+       ══════════════════════════════════════════════════════════════ */
+    const CONFIG = {
+      videoSrc: 'video.mp4',
+
+      headline: 'Free Burrito',
+      subline: 'Download our new app<br>& sign up to GOMEX!',
+
+      voucherProgram: 'GOMEX',
+      voucherTag: 'NEW MEMBER',
+      voucherItem: '1× Regular Burrito',
+      voucherValue: 'On us &middot; valued up to <b>$14.50</b>',
+      voucherFree: 'FREE',
+      voucherTap: 'Tap to claim',
+      stampLabel: 'CLAIMED!',
+
+      ctaLabel: 'GET MY FREE BURRITO',
+      ctaLabelClaimed: 'DOWNLOAD TO REDEEM',
+
+      // Click-throughs. An ad server's window.clickTag overrides all of these.
+      appStoreUrl: 'https://apps.apple.com/us/search?term=guzman%20y%20gomez',
+      playStoreUrl: 'https://play.google.com/store/search?q=guzman%20y%20gomez&c=apps',
+
+      handle: '@guzmanygomezus',
+      terms: 'New app users only. Free regular burrito (up to $14.50) loaded on GOMEX sign-up. T&Cs apply.',
+    };
+
+    /* ── Wiring (you shouldn't need to edit below) ── */
+    const $ = (id) => document.getElementById(id);
+    const video = $('video');
+    video.src = CONFIG.videoSrc;
+
+    $('headline').textContent = CONFIG.headline;
+    $('subline').innerHTML = CONFIG.subline;
+    $('vProgram').textContent = CONFIG.voucherProgram;
+    $('vTag').textContent = CONFIG.voucherTag;
+    $('vItem').textContent = CONFIG.voucherItem;
+    $('vValue').innerHTML = CONFIG.voucherValue;
+    $('vFree').textContent = CONFIG.voucherFree;
+    $('vTap').textContent = CONFIG.voucherTap;
+    $('stamp').textContent = CONFIG.stampLabel;
+    $('ctaLabel').textContent = CONFIG.ctaLabel;
+    $('handle').textContent = CONFIG.handle;
+    $('terms').textContent = CONFIG.terms;
+
+    // Barcode — fixed pseudo-random bars so it looks the same every load
+    (() => {
+      let x = 2, seed = 7, bars = '';
+      while (x < 98) {
+        seed = (seed * 9301 + 49297) % 233280;
+        const w = 0.8 + (seed % 4) * 0.7;
+        if (x + w > 98) break;
+        bars += `<rect x="${x.toFixed(2)}" y="0" width="${w.toFixed(2)}" height="30" fill="#171717"/>`;
+        x += w + 0.9 + (seed % 3) * 0.6;
+      }
+      $('barcode').innerHTML = bars;
+    })();
+
+    // Mute toggle
+    $('muteBtn').addEventListener('click', () => {
+      video.muted = !video.muted;
+      $('muteIcon').hidden = !video.muted;
+      $('unmuteIcon').hidden = video.muted;
+      $('muteBtn').setAttribute('aria-label', video.muted ? 'Unmute video' : 'Mute video');
+    });
+
+    // Click-through — iOS → App Store, everything else → Google Play
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    function exit(storeUrl) {
+      const url = window.clickTag || storeUrl || (isIOS ? CONFIG.appStoreUrl : CONFIG.playStoreUrl);
+      window.open(url, '_blank');
+    }
+    $('ctaBtn').addEventListener('click', () => exit());
+    $('appStore').addEventListener('click', (e) => { e.preventDefault(); exit(CONFIG.appStoreUrl); });
+    $('playStore').addEventListener('click', (e) => { e.preventDefault(); exit(CONFIG.playStoreUrl); });
+
+    // Voucher — first tap stamps it CLAIMED and arms the CTA; later taps exit
+    const voucher = $('voucher');
+    voucher.addEventListener('click', () => {
+      if (voucher.classList.contains('claimed')) return exit();
+      voucher.classList.add('claimed');
+      voucher.setAttribute('aria-label', 'Voucher claimed. Download the app to redeem');
+      $('ctaLabel').textContent = CONFIG.ctaLabelClaimed;
+      $('ctaBtn').classList.add('ready');
+      if (navigator.vibrate) navigator.vibrate(30);
+    });
+  </script>
+</body>
+
+</html>
