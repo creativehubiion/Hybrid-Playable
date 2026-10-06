@@ -499,6 +499,7 @@
       if (S.mode === 'attract') { resetRound('play'); $('hint').hidden = true; }
       unmuteOnce();
       if (S.mode !== 'play') return;
+      $('hint').hidden = true;
       ptr = { id: e.pointerId, x: e.clientX, y: e.clientY };
       area.setPointerCapture(e.pointerId);
       S.firing = true; S.idle = 0;
@@ -1104,6 +1105,7 @@
     if (!BOT) whenReady.push(() => { $('startCard').hidden = false; });
     $('startCard').addEventListener('click', () => {
       $('startCard').hidden = true; unmuteOnce(); resetRound('play'); S.idle = 0;
+      $('hint').hidden = false;                           // show how to play right away; first touch hides it
     });
     if (BOT) $('hint').hidden = true;
     requestAnimationFrame(frame);
