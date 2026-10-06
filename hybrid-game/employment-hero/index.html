@@ -323,7 +323,7 @@
       playLabel: 'Tap to play',
       orbBanner: 'Blast the orb!',
 
-      roundSecs: 15,          // clock
+      roundSecs: 20,          // clock
       startApps: 12,
       maxApps: 22,            // splitting cap
       badgeStart: [4, 34],    // initial notification badge range
@@ -335,9 +335,9 @@
 
       coneRadius: 0.15,       // blower reach around the reticle (world units, 1 = panel height)
       blowDamage: [2.3, 1.1], // hp/sec at centre → edge of cone
-      heatRate: 0.42,         // heat per second while blowing (≈2.4 s to overheat)
-      coolRate: 0.65,
-      overheatResume: 0.35,
+      heatRate: 0.30,         // heat per second while blowing (≈3.3 s of continuous blowing to overheat)
+      coolRate: 0.9,
+      overheatResume: 0.5,    // blower comes back once heat drops to here (≈0.55 s lockout)
       comboWindow: 0.55,      // secs between launches to chain a combo
       comboBonus: 0.75,       // secs added per extra app in a combo
       lookSensitivity: 1.25,  // horizontal drag → camera pan
@@ -359,7 +359,8 @@
     /* ── World ─────────────────────────────────────────────────────
        World units: panel height = 1. The office is a 16:9 panorama
        (WORLD_W wide); the camera pans horizontally only.            */
-    const BOT = new URLSearchParams(location.search).has('bot');   // test: autopilot plays a real round
+    const BOT = new URLSearchParams(location.search).has('bot');
+    const HUMAN = new URLSearchParams(location.search).has('human');   // ?sim&human — slower, sloppier autopilot for tuning   // test: autopilot plays a real round
     const WORLD_W = 16 / 9;
     const ICON = 0.13;           // icon size (world units)
     const DESK = { x0: 0.66, x1: 1.12, y0: 0.66 };
@@ -447,6 +448,7 @@
       S.mode = mode; S.icons = spawnIcons(CONFIG.startApps); S.parts = []; S.pops = [];
       S.timeLeft = CONFIG.roundSecs; S.elapsed = 0; S.cleared = 0; S.orb = null;
       S.heat = 0; S.over = false; S.combo = 0; S.lastLaunch = -9; S.blastT = 0; S.flash = 0;
+      S.firing = false; ptr = null; S.autoTarget = null;    // never inherit the demo's trigger
       if ($('banner')) $('banner').hidden = true;
       S.camX = maxCam() * 0.45; S.aimOff = 0; S.aimY = 0.45;
       $('winCard').hidden = true; $('failCard').hidden = true;
@@ -489,11 +491,13 @@
         S.autoTarget = targets.reduce((a, b) => cost(b) < cost(a) ? b : a);
       }
       const t = S.autoTarget;
-      const cur = reticleX();
-      aimAt(cur + (t.x - cur) * Math.min(1, dt * 4));
-      S.aimY += (clamp(t.y, .2, .8) - S.aimY) * Math.min(1, dt * 5);
+      const cur = reticleX(), skill = HUMAN ? .3 : 1;
+      aimAt(cur + (t.x - cur) * Math.min(1, dt * 4 * skill));
+      S.aimY += (clamp(t.y, .2, .8) - S.aimY) * Math.min(1, dt * 5 * skill);
       const rx = reticleX();
-      S.firing = !S.over && Math.hypot(t.x - rx, t.y - S.aimY) < CONFIG.coneRadius * 0.8;
+      const onTarget = Math.hypot(t.x - rx, t.y - S.aimY) < CONFIG.coneRadius * 0.8;
+      // a person holds the trigger a moment late and doesn't release to cool down
+      S.firing = !S.over && (HUMAN ? (onTarget || S.firing) && Math.random() > .02 : onTarget);
     }
 
     /* ── Update ── */
