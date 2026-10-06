@@ -171,6 +171,18 @@
     }
     @keyframes bob { 50% { translate: -50% -.8cqw; } }
 
+    /* Loader — covers the game half until every game asset is in, so no greybox ever shows */
+    .loader {
+      position: absolute; inset: 0; z-index: 6; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4cqw;
+      background: radial-gradient(circle at 50% 42%, #3B1757 0%, #1B0A28 72%);
+      transition: opacity .45s ease;
+    }
+    .loader.done { opacity: 0; pointer-events: none; }
+    .loader .brand { height: auto; width: 22cqw; padding: 3cqw; border-radius: 4.4cqw; animation: pulse 1.4s ease-in-out infinite;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 0 6cqw rgba(179, 133, 254, .45), 0 1cqw 2.4cqw rgba(0, 0, 0, .4); }
+    .loader .bar { width: 40cqw; height: 1.2cqw; }
+    .loader .bar i { --b-hi: #E2CCFF; --b-col: #B385FE; --b-lo: #7B4FC4; transition: width .25s ease; }
+
     /* Start card — the attract demo keeps playing behind a light dim; one clean tap unlocks sound everywhere */
     .start {
       position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -230,7 +242,7 @@
     .btn:focus-visible { outline: .6cqw solid var(--paper); outline-offset: .6cqw; }
 
     @media (prefers-reduced-motion: reduce) {
-      .hint, .meter.hot, .heat.hot, .heat.over, .start .btn { animation: none; }
+      .hint, .meter.hot, .heat.hot, .heat.over, .start .btn, .loader .brand { animation: none; }
       .token { transition: none; }
     }
   </style>
@@ -268,7 +280,11 @@
       </div>
       <div class="hint" id="hint">Hold &amp; drag to blow</div>
 
-      <div class="start" id="startCard">
+      <div class="loader" id="loader" role="progressbar" aria-label="Loading game" aria-valuemin="0" aria-valuemax="100">
+        <div class="brand"><img src="assets/eh-mark.svg" alt="Employment Hero"></div>
+        <div class="bar"><i id="loadBar"></i></div>
+      </div>
+      <div class="start" id="startCard" hidden>
         <h2 id="startTitle"></h2>
         <p id="startLine"></p>
         <button class="btn primary" id="playBtn"></button>
@@ -309,7 +325,7 @@
        EDIT ME ▸ COPY & TUNING
        ══════════════════════════════════════════════════════════════ */
     const CONFIG = {
-      videoSrc: 'assets/video.mp4',
+      videoSrc: 'assets/video.mp4?v=3',   // bump ?v when the file is replaced so cached copies refresh
       videoVolume: 0.35,      // sound comes on with the first tap on the game, at this volume
       ctaLabel: 'Book a demo',
       ctaUrl: 'https://employmenthero.com/demo/',
@@ -364,9 +380,34 @@
 
     /* ── Art (Gemini layers, processed by _work/.../_process.py). Greybox shapes draw until each loads. ── */
     const ART = {};
-    for (const [k, f] of [['office', 'game/office.webp'], ['icons', 'game/icons.webp'], ['blower', 'game/blower.webp'], ['mark', 'eh-mark-white.svg']]) {
-      const im = new Image(); im.onload = () => { ART[k] = im; if (k === 'blower') ART.blowerHot = tint(im, '#FF5A1A'); }; im.src = 'assets/' + f;
+    // Everything the game half shows. The loader stays up until all of these settle (errors count, 10 s cap).
+    const PRELOAD = [['office', 'game/office.webp'], ['icons', 'game/icons.webp'], ['blower', 'game/blower.webp'],
+                     ['mark', 'eh-mark-white.svg'], ['token', 'game/pete-token.webp'], ['logo', 'eh-logo-white.svg'], ['tile', 'eh-mark.svg']];
+    let loaded = 0, ready = false;
+    const whenReady = [];
+    function settle() {
+      loaded++;
+      const pct = Math.round(loaded / PRELOAD.length * 100);
+      document.getElementById('loadBar').style.width = pct + '%';
+      document.getElementById('loader').setAttribute('aria-valuenow', pct);
+      if (loaded === PRELOAD.length) reveal();
     }
+    function reveal() {
+      if (ready) return; ready = true;
+      setTimeout(() => {                                   // let the bar visibly reach 100%
+        const l = document.getElementById('loader'); l.classList.add('done');
+        setTimeout(() => { l.hidden = true; }, 500);
+        whenReady.forEach(f => f());
+      }, 250);
+    }
+    const SLOW = new URLSearchParams(location.search).has('slow');   // test: stagger loads to see the loader
+    PRELOAD.forEach(([k, f], i) => {
+      const im = new Image();
+      im.onload = () => { ART[k] = im; if (k === 'blower') ART.blowerHot = tint(im, '#FF5A1A'); settle(); };
+      im.onerror = settle;
+      setTimeout(() => { im.src = 'assets/' + f; }, SLOW ? (i + 1) * 500 : 0);
+    });
+    setTimeout(reveal, 10000);
     function tint(im, col) {                       // same sprite, flooded with colour (alpha preserved)
       const c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
       const x = c.getContext('2d'); x.drawImage(im, 0, 0);
@@ -454,7 +495,7 @@
     let ptr = null;
     area.addEventListener('pointerdown', (e) => {
       if (e.target.closest('.card')) return;
-      if (!$('startCard').hidden) return;                 // the start card handles the first tap
+      if (!ready || !$('startCard').hidden) return;       // ignore taps while loading; the start card handles the first tap
       if (S.mode === 'attract') { resetRound('play'); $('hint').hidden = true; }
       unmuteOnce();
       if (S.mode !== 'play') return;
@@ -1056,7 +1097,7 @@
     $('startTitle').textContent = CONFIG.startTitle; $('startLine').textContent = CONFIG.startLine;
     $('playBtn').textContent = CONFIG.playLabel;
     $('hint').hidden = true;
-    if (BOT) $('startCard').hidden = true;
+    if (!BOT) whenReady.push(() => { $('startCard').hidden = false; });
     $('startCard').addEventListener('click', () => {
       $('startCard').hidden = true; unmuteOnce(); resetRound('play'); S.idle = 0;
     });
