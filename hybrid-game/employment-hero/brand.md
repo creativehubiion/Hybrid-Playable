@@ -1,7 +1,7 @@
 # Employment Hero — "Blow 'Em Away" hybrid game
 
-Video on top (37%): the "Employment Operating System: Leap into the future of work" spot, original 1080p file
-(lossless faststart remux; the baked-in pillarbox is cropped in CSS, no re-encode).
+Video on top (37%): the "Employment Operating System: Leap into the future of work" spot, re-encoded to
+1280x720 (pillarbox cropped, H.264 CRF 27, faststart) = 3.5 MB — visually identical to the 1080p source at slot size.
 Game below (63%): first-person leaf blower in Pete's office. Clear the apps before Pete's stress maxes out;
 blast the Employment Hero orb (appears at 60% cleared) to pull every remaining app into one place.
 

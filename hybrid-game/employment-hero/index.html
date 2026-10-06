@@ -48,12 +48,8 @@
 
     /* ── VIDEO (37%) ── */
     .video-area { height: 37%; position: relative; background: var(--ink); flex-shrink: 0; overflow: hidden; }
-    /* Source is the untouched 1080p spot with black pillarbox bars baked in (picture = 1557 of 1920 px wide).
-       Scale it so the picture fills the frame width and the bars fall outside — no re-encode, no quality loss. */
-    .video-area video {
-      position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-      width: calc(100% * 1920 / 1557); height: auto; display: block;
-    }
+    /* 1280x720 encode with the source's pillarbox already cropped out (3.5 MB) */
+    .video-area video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .mute-btn {
       position: absolute; top: 2.2cqw; right: 2.2cqw; z-index: 3;      /* same size as the other hybrids */
       width: 7cqw; height: 7cqw; border-radius: 50%; border: none;

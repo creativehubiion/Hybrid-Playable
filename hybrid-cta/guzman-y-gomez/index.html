@@ -356,8 +356,9 @@
     // Mute toggle
     $('muteBtn').addEventListener('click', () => {
       video.muted = !video.muted;
-      $('muteIcon').hidden = !video.muted;
-      $('unmuteIcon').hidden = video.muted;
+      // SVG elements have no .hidden property, so toggle the attribute itself
+      $('muteIcon').toggleAttribute('hidden', !video.muted);
+      $('unmuteIcon').toggleAttribute('hidden', video.muted);
       $('muteBtn').setAttribute('aria-label', video.muted ? 'Unmute video' : 'Mute video');
     });
 
